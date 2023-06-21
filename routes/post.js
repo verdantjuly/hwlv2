@@ -8,13 +8,13 @@ const JWT = require("jsonwebtoken")
 
 // 게시글 전체 불러오기
 router.get("/posts", async (req, res) => {
-    const allPosts = await Posts.find().sort({ updatedAt: -1 })
+    const allPosts = await Posts.find().sort({ createdAt: -1 })
     if (!allPosts.length) {
         return res.status(200).json({
             "message": "작성된 게시글이 없습니다. 첫 작성자가 되어 주세요!"
         })
     } else {
-        return res.status(200).json({ "posts": allPosts })
+        return res.status(200).json({ allPosts })
 
     }
 
@@ -28,7 +28,7 @@ router.get("/posts/:postid", async (req, res) => {
         res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
     }
     else if (selectPost) {
-        return res.status(200).json({ "Selected Post by postid": selectPost })
+        return res.status(200).json({ selectPost })
     }
 })
 
@@ -61,14 +61,14 @@ router.patch("/posts/:postid", async (req, res) => {
     var { title, content } = req.body
     const existPost = await Posts.findOne({ "_id": postid, "nickname": nickname, "password": password }).select("+password")
 
-    if (!ObjectId.isValid(postid) || password !== existPost.password) {
+    if (!existPost || !ObjectId.isValid(postid) || password !== existPost.password) {
         res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
     }
 
     else if (password == existPost.password) {
         await Posts.findByIdAndUpdate(postid, { title, content })
         return res.status(200).json({
-            "message": "게시글 " + postid + "가 수정되었습니다."
+            "message": "게시글이 수정되었습니다."
         })
     }
 })
@@ -82,13 +82,13 @@ router.delete("/posts/:postid", async (req, res) => {
     const password = verified.password
     const existPost = await Posts.findOne({ "_id": postid, nickname, password }).select("+password")
 
-    if (!ObjectId.isValid(postid) || password !== existPost.password) {
+    if (!existPost || !ObjectId.isValid(postid) || password !== existPost.password) {
         res.status(400).json({ message: '데이터 형식이 올바르지 않습니다.' });
     }
     else if (password == existPost.password) {
         await Posts.findByIdAndDelete({ "_id": postid })
         return res.status(200).json({
-            "message": "게시글 " + postid + "가 삭제되었습니다."
+            "message": "게시글이 삭제되었습니다."
         })
     }
 })

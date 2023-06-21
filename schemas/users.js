@@ -3,7 +3,6 @@ const mongoose = require("mongoose")
 const userScheama = new mongoose.Schema({
     nickname: {
         type: String,
-        unique: true
 
     },
     password: {
