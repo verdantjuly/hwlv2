@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const users = require("../schemas/users")
+const users = require("../schemas/user")
 const JWT = require("jsonwebtoken")
 
 // cookieParser
@@ -43,7 +43,7 @@ router.post('/login', async (req, res) => {
         const token = JWT.sign({ nickname, password }, "dayoung", { expiresIn: 3600 })
         let expires = new Date();
         expires.setMinutes(expires.getMinutes() + 60); // 만료 시간을 60분으로 설정합니다.
-        res.cookie('token', token, {
+        res.cookie("Authorization", `Bearer ${token}`, {
             expires: expires
         });
         return res.status(200).json({ message: "로그인에 성공하였습니다."}).end()

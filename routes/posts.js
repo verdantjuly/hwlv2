@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Posts = require("../schemas/posts.js")
+const Posts = require("../schemas/post.js")
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Types;
-const JWT = require("jsonwebtoken")
+const authMiddleware = require("../middlewares/auth-middleware");
 
 
 // 게시글 전체 불러오기
@@ -34,12 +34,10 @@ router.get("/posts/:postid", async (req, res) => {
 
 
 // 게시글 작성하기 
-router.post("/posts", async (req, res) => {
-    const token = req.cookies.token
-    const verified = JWT.verify(token, "dayoung");
-    const nickname = verified.nickname
-    const password = verified.password
-    var { title, content } = req.body
+router.post("/posts", authMiddleware, async (req, res) => {
+    const { nickname } = res.locals
+    const { password } = res.locals
+    const { title, content } = req.body
 
     if (nickname && password && title && content) {
 
@@ -52,12 +50,10 @@ router.post("/posts", async (req, res) => {
 })
 
 // 게시글 수정하기
-router.patch("/posts/:postid", async (req, res) => {
+router.patch("/posts/:postid", authMiddleware, async (req, res) => {
     var { postid } = req.params
-    const token = req.cookies.token
-    const verified = JWT.verify(token, "dayoung");
-    const nickname = verified.nickname
-    const password = verified.password
+    const { nickname } = res.locals
+    const { password } = res.locals
     var { title, content } = req.body
     const existPost = await Posts.findOne({ "_id": postid, "nickname": nickname, "password": password }).select("+password")
 
@@ -74,12 +70,10 @@ router.patch("/posts/:postid", async (req, res) => {
 })
 
 // 게시글 삭제하기
-router.delete("/posts/:postid", async (req, res) => {
+router.delete("/posts/:postid", authMiddleware, async (req, res) => {
     var { postid } = req.params
-    const token = req.cookies.token
-    const verified = JWT.verify(token, "dayoung");
-    const nickname = verified.nickname
-    const password = verified.password
+    const { nickname } = res.locals
+    const { password } = res.locals
     const existPost = await Posts.findOne({ "_id": postid, nickname, password }).select("+password")
 
     if (!existPost || !ObjectId.isValid(postid) || password !== existPost.password) {

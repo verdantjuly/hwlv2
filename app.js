@@ -1,8 +1,8 @@
 const express = require('express');
 const connect = require('./schemas');
-const userRouter = require('./routes/user');
-const postRouter = require('./routes/post');
-const commentRouter = require('./routes/comment');
+const userRouter = require('./routes/users');
+const postRouter = require('./routes/posts');
+const commentRouter = require('./routes/comments');
 
 const app = express();
 const port = 3000;

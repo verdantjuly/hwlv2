@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Comments = require("../schemas/comments.js")
+const Comments = require("../schemas/comment.js")
 const mongoose = require("mongoose")
 const { ObjectId } = mongoose.Types;
-const JWT = require("jsonwebtoken")
-
+const authMiddleware = require("../middlewares/auth-middleware");
 
 // 댓글 전체 조회하기
 router.get("/comments/:postid", async (req, res) => {
@@ -28,13 +27,11 @@ router.get("/comments/:postid", async (req, res) => {
 
 
 // 댓글 작성하기 
-router.post("/comments/:postid", async (req, res) => {
+router.post("/comments/:postid", authMiddleware,async (req, res) => {
     var { postid } = req.params
     var { content } = req.body
-    const token = req.cookies.token
-    const verified = JWT.verify(token, "dayoung");
-    const nickname = verified.nickname
-    const password = verified.password
+    const { nickname } = res.locals
+    const { password } = res.locals
     if (!content) {
         return res.status(400).json({
             success: false,
@@ -52,13 +49,11 @@ router.post("/comments/:postid", async (req, res) => {
 
 
 // 댓글 수정하기
-router.put("/comments/:commentid", async (req, res) => {
+router.put("/comments/:commentid", authMiddleware,async (req, res) => {
     var { commentid } = req.params
     var { content } = req.body
-    const token = req.cookies.token
-    const verified = JWT.verify(token, "dayoung");
-    const nickname = verified.nickname
-    const password = verified.password
+    const { nickname } = res.locals
+    const { password } = res.locals
 
     var findComment = await Comments.findOne({ "_id": commentid, nickname }).select("+password")
 
@@ -82,13 +77,11 @@ router.put("/comments/:commentid", async (req, res) => {
 
 // 댓글 삭제하기
 
-router.delete("/comments/:commentid", async (req, res) => {
+router.delete("/comments/:commentid", authMiddleware,async (req, res) => {
     var { commentid } = req.params
 
-    const token = req.cookies.token
-    const verified = JWT.verify(token, "dayoung");
-    const nickname = verified.nickname
-    const password = verified.password
+    const { nickname } = res.locals
+    const { password } = res.locals
 
     var findComment = await Comments.findOne({ "_id": commentid, nickname }).select("+password")
 
