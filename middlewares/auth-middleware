@@ -4,8 +4,7 @@ const jwt = require("jsonwebtoken");
 
 module.exports = async (req, res, next) => {
   const { Authorization } = req.cookies;
-  const authType = Authorization.split(" ")[0]
-  const authToken = Authorization.split(" ")[1]
+  const [authType, authToken] = (Authorization ?? "").split(" ");
 
   if (!authToken || authType !== "Bearer") {
     res.status(401).send({
