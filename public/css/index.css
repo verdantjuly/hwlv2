@@ -1,0 +1,11 @@
+h1{
+    text-align: center;
+}
+
+#postslist{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px auto 20px auto;
+    width: 400px;
+}
