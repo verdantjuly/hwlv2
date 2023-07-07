@@ -1,6 +1,4 @@
-
 const jwt = require("jsonwebtoken");
-
 
 module.exports = async (req, res, next) => {
   const { Authorization } = req.cookies;
@@ -15,8 +13,8 @@ module.exports = async (req, res, next) => {
 
   try {
     const verified = jwt.verify(authToken, "dayoung");
-    const nickname = verified.nickname 
-    const password = verified.password
+    const nickname = verified.nickname;
+    const password = verified.password;
     res.locals.nickname = nickname;
     res.locals.password = password;
     next();
